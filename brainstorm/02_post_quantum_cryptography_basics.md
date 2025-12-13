@@ -550,16 +550,108 @@ Our Research Question:
 Can we have BOTH privacy (encryption) AND security (Byzantine defense)?
 ```
 
-**This is where Post-Quantum Crypto helps:**
+### 🚨 IMPORTANT CLARIFICATION 🚨
+
+**What PQC Actually Does:**
 
 ```
-We need crypto that:
-1. Protects against quantum computers (PQC)
-2. Allows some form of detection/verification
-3. Maintains privacy
+PQC ensures SECURE ENCRYPTED CHANNEL:
+├── Alice (Hospital) ←──── encrypted ────→ Bob (Server)
+├── Eve (Outside Attacker) can't eavesdrop ✅
+├── Future quantum computers can't break it ✅
+└── Communication channel is protected ✅
 
-This is the GAP we can address!
+What PQC DOES NOT DO:
+❌ Does NOT defend against Byzantine (malicious) clients
+❌ Does NOT detect if Alice is sending poisoned gradients
+❌ Does NOT validate if updates are correct
+
+Why?
+Because Alice is a LEGITIMATE participant!
+She has the key, she's authorized to send updates.
+PQC protects the CHANNEL, not the CONTENT.
 ```
+
+**The Real Problem:**
+
+```
+Hospital A (Legitimate) → Sends good gradient → Server ✅
+Hospital B (Legitimate) → Sends good gradient → Server ✅
+Hospital C (MALICIOUS)  → Sends poisoned gradient → Server ❌
+
+With PQC encryption:
+├── All three hospitals use encrypted channels ✅
+├── Eve (outside) can't intercept ✅
+├── BUT Hospital C is authorized, has the key!
+└── Hospital C encrypts POISONED gradient and sends it ✅
+
+Server receives:
+├── Encrypted update from A (good)
+├── Encrypted update from B (good)  
+├── Encrypted update from C (POISONED!)
+└── Server decrypts all three...
+    
+Problem: Server gets the poisoned gradient!
+PQC didn't stop it because C is a legitimate participant!
+```
+
+**Two SEPARATE Problems:**
+
+```
+Problem 1: Secure Channel (External Threat)
+├── Attacker: Eve (outside eavesdropper)
+├── Attack: Intercept communication, quantum computer breaks crypto
+├── Defense: PQC (Kyber, Dilithium) ✅
+└── This is what PQC solves!
+
+Problem 2: Byzantine Attack (Internal Threat)
+├── Attacker: Malicious Hospital C (authorized participant)
+├── Attack: Send poisoned gradients intentionally
+├── Defense: ??? (Byzantine-robust algorithms needed)
+└── This is what PQC DOES NOT solve!
+```
+
+**So What's Our Research About?**
+
+```
+We need BOTH:
+
+1. Secure Channel: Use PQC ✅
+   └── Protects from Eve (outside) and quantum computers
+
+2. Byzantine Defense: Use gradient fingerprinting / validation ✅
+   └── Protects from malicious Hospital C (inside)
+
+The challenge:
+├── Byzantine defense needs to see gradients (for comparison/detection)
+├── But PQC encrypts gradients (for privacy)
+├── How do we detect Byzantine attacks WITHOUT breaking encryption?
+└── This is the research gap!
+```
+
+**Analogy:**
+
+```
+Imagine a bank vault:
+
+PQC = Strong vault door
+├── Protects from thieves breaking in from outside ✅
+└── But doesn't stop a rogue bank employee (who has the key)!
+
+Byzantine Defense = Security cameras inside the vault
+├── Monitors employees for suspicious behavior
+└── Catches the rogue employee
+
+We need BOTH:
+├── Strong door (PQC) to keep outsiders out
+└── Cameras (Byzantine defense) to monitor insiders
+```
+
+**Bottom Line:**
+
+✅ **PQC gives us:** Quantum-safe encrypted communication channel  
+❌ **PQC does NOT give us:** Protection against malicious participants  
+🎯 **Our research:** Combine PQC (secure channel) + Byzantine defense (detect malicious updates) + Privacy (encryption)
 
 ---
 
